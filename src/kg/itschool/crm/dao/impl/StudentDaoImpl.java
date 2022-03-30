@@ -26,8 +26,7 @@ public class StudentDaoImpl implements StudentDao {
                     "dob          DATE         NOT NULL CHECK(dob < NOW()), " +
                     "date_created TIMESTAMP    NOT NULL DEFAULT NOW(), " +
                     "" +
-                    "CONSTRAINT pk_manager_id PRIMARY KEY(id), " +
-                    "CONSTRAINT chk_manager_first_name CHECK(LENGTH(first_name) > 2)" +
+                    "CONSTRAINT pk_student_id PRIMARY KEY(id) " +
                     ");";
 
             Log.info(this.getClass().getSimpleName(), Statement.class.getSimpleName(), " creating statement...");

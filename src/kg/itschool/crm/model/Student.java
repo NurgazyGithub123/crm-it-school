@@ -9,6 +9,7 @@ public final class Student extends BaseEntity{
     private String phoneNumber;
     private String email;
     private LocalDate dob;
+
     private Group group;
 
     public Student() {

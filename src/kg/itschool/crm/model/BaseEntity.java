@@ -31,3 +31,4 @@ abstract class BaseEntity {
         this.dateCreated = dateCreated;
     }
 }
+

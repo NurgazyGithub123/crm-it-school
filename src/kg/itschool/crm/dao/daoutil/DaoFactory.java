@@ -16,7 +16,7 @@ public abstract class DaoFactory {
         }
     }
 
-    public static ManagerDao getManagerDaoSQL() {
+    public static ManagerDao goetManagerDaoSQL() {
         return new ManagerDaoImpl();
     }
 
