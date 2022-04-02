@@ -3,16 +3,17 @@ package kg.itschool.crm.model;
 import java.time.LocalDateTime;
 
 abstract class BaseEntity {
+
     protected Long id;
     protected LocalDateTime dateCreated;
 
-    public BaseEntity(Long id) {
-        this.id = id;
-        this.dateCreated = LocalDateTime.now();
+    protected BaseEntity() {
+        dateCreated = LocalDateTime.now();
     }
 
-    protected BaseEntity() {
-        this.dateCreated = LocalDateTime.now();
+    public BaseEntity(Long id) {
+        this.id = id;
+        dateCreated = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -31,4 +32,3 @@ abstract class BaseEntity {
         this.dateCreated = dateCreated;
     }
 }
-

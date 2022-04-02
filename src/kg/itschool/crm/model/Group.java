@@ -3,6 +3,7 @@ package kg.itschool.crm.model;
 import java.time.LocalTime;
 
 public final class Group extends BaseEntity {
+
     private String name;
     private LocalTime groupTime;
     private Course course;
@@ -17,22 +18,6 @@ public final class Group extends BaseEntity {
         this.name = name;
         this.groupTime = groupTime;
         this.course = course;
-        this.mentor = mentor;
-    }
-
-    public Course getCourse() {
-        return course;
-    }
-
-    public void setCourse(Course course) {
-        this.course = course;
-    }
-
-    public Mentor getMentor() {
-        return mentor;
-    }
-
-    public void setMentor(Mentor mentor) {
         this.mentor = mentor;
     }
 
@@ -52,6 +37,22 @@ public final class Group extends BaseEntity {
         this.groupTime = groupTime;
     }
 
+    public Course getCourse() {
+        return course;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
+    public Mentor getMentor() {
+        return mentor;
+    }
+
+    public void setMentor(Mentor mentor) {
+        this.mentor = mentor;
+    }
+
     @Override
     public String toString() {
         return "Group{" +
@@ -60,7 +61,6 @@ public final class Group extends BaseEntity {
                 ", name='" + name + '\'' +
                 ", groupTime=" + groupTime +
                 ", course=" + course +
-                ", mentor=" + mentor +
                 '}';
     }
 }

@@ -1,10 +1,10 @@
 package kg.itschool.crm.dao.impl;
 
 import kg.itschool.crm.dao.StudentDao;
-import kg.itschool.crm.dao.daoutil.Log;
 import kg.itschool.crm.model.Student;
 
 import java.sql.*;
+import java.util.List;
 
 public class StudentDaoImpl implements StudentDao {
 
@@ -13,9 +13,9 @@ public class StudentDaoImpl implements StudentDao {
         Statement statement = null;
 
         try {  // api:driver://host:port/database_name
-            Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), " establishing connection");
+            System.out.println("Connecting to database...");
             connection = getConnection();
-            Log.info(this.getClass().getSimpleName(), connection.getClass().getSimpleName(), " connection established");
+            System.out.println("Connection succeeded.");
 
             String ddlQuery = "CREATE TABLE IF NOT EXISTS tb_students(" +
                     "id           BIGSERIAL, " +
@@ -26,16 +26,16 @@ public class StudentDaoImpl implements StudentDao {
                     "dob          DATE         NOT NULL CHECK(dob < NOW()), " +
                     "date_created TIMESTAMP    NOT NULL DEFAULT NOW(), " +
                     "" +
-                    "CONSTRAINT pk_student_id PRIMARY KEY(id) " +
-                    ");";
+                    "CONSTRAINT pk_manager_id PRIMARY KEY(id), " +
+                    "CONSTRAINT chk_manager_first_name CHECK(LENGTH(first_name) > 2));";
 
-            Log.info(this.getClass().getSimpleName(), Statement.class.getSimpleName(), " creating statement...");
+            System.out.println("Creating statement...");
             statement = connection.createStatement();
-            Log.info(this.getClass().getSimpleName(), Statement.class.getSimpleName(), " executing create table statement...");
+            System.out.println("Executing create table statement...");
             statement.execute(ddlQuery);
 
         } catch (SQLException e) {
-            Log.error(this.getClass().getSimpleName(), e.getStackTrace()[0].getClass().getSimpleName(), e.getMessage());
+            System.out.println("Some error occurred");
             e.printStackTrace();
         } finally {
             close(statement);
@@ -52,9 +52,9 @@ public class StudentDaoImpl implements StudentDao {
         Student savedStudent = null;
 
         try {
-            Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), " connecting to database...");
+            System.out.println("Connecting to database...");
             connection = getConnection();
-            Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), " connection succeeded.");
+            System.out.println("Connection succeeded.");
 
             String createQuery = "INSERT INTO tb_students(" +
                     "last_name, first_name, phone_number, date_created, dob, email) " +
@@ -75,8 +75,8 @@ public class StudentDaoImpl implements StudentDao {
             String readQuery = "SELECT * FROM tb_students ORDER BY id DESC LIMIT 1";
 
             preparedStatement = connection.prepareStatement(readQuery);
-
             resultSet = preparedStatement.executeQuery();
+
             resultSet.next();
 
             savedStudent = new Student();
@@ -89,7 +89,6 @@ public class StudentDaoImpl implements StudentDao {
             savedStudent.setDateCreated(resultSet.getTimestamp("date_created").toLocalDateTime());
 
         } catch (SQLException e) {
-            Log.error(this.getClass().getSimpleName(), e.getStackTrace()[0].getClass().getSimpleName(), e.getMessage());
             e.printStackTrace();
         } finally {
             close(resultSet);
@@ -109,9 +108,7 @@ public class StudentDaoImpl implements StudentDao {
         Student student = null;
 
         try {
-            Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), " connecting to database...");
             connection = getConnection();
-            Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), " connection succeeded.");
 
             String readQuery = "SELECT * FROM tb_students WHERE id = ?";
 
@@ -133,7 +130,6 @@ public class StudentDaoImpl implements StudentDao {
 
 
         } catch (SQLException e) {
-            Log.error(this.getClass().getSimpleName(), e.getStackTrace()[0].getClass().getSimpleName(), e.getMessage());
             e.printStackTrace();
         } finally {
             close(resultSet);
@@ -141,5 +137,10 @@ public class StudentDaoImpl implements StudentDao {
             close(connection);
         }
         return student;
+    }
+
+    @Override
+    public List<Student> findAll() {
+        return null;
     }
 }

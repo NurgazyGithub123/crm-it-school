@@ -1,6 +1,9 @@
 package kg.itschool.crm.model;
 
+import java.time.LocalDateTime;
+
 public final class Address extends BaseEntity {
+
     private String state;
     private String city;
     private String region;
@@ -20,6 +23,14 @@ public final class Address extends BaseEntity {
         this.district = district;
         this.street = street;
         this.apartment = apartment;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     public String getState() {

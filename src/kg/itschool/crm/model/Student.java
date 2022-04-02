@@ -2,14 +2,13 @@ package kg.itschool.crm.model;
 
 import java.time.LocalDate;
 
-public final class Student extends BaseEntity{
+public final class Student extends BaseEntity {
 
     private String firstName;
     private String lastName;
     private String phoneNumber;
     private String email;
     private LocalDate dob;
-
     private Group group;
 
     public Student() {
@@ -66,16 +65,18 @@ public final class Student extends BaseEntity{
         this.dob = dob;
     }
 
+
+
     @Override
     public String toString() {
         return "Student{" +
                 "id=" + id +
-                ", dateCreated=" + dateCreated +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", email='" + email + '\'' +
                 ", dob=" + dob +
+                ", dateCreated=" + dateCreated +
                 '}';
     }
 }

@@ -78,13 +78,13 @@ public final class Mentor extends BaseEntity {
     public String toString() {
         return "Mentor{" +
                 "id=" + id +
-                ", dateCreated=" + dateCreated +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", email='" + email + '\'' +
                 ", dob=" + dob +
                 ", salary=" + salary +
+                ", dateCreated=" + dateCreated +
                 '}';
     }
 }

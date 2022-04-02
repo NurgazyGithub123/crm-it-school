@@ -5,6 +5,7 @@ import kg.itschool.crm.dao.daoutil.Log;
 import kg.itschool.crm.model.Address;
 
 import java.sql.*;
+import java.util.List;
 
 public class AddressDaoImpl implements AddressDao {
 
@@ -13,27 +14,26 @@ public class AddressDaoImpl implements AddressDao {
         Statement statement = null;
 
         try {
-            Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), " establishing connection");
+            Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), "Establishing connection");
             connection = getConnection();
-            Log.info(this.getClass().getSimpleName(), connection.getClass().getSimpleName(), " connection established");
+            Log.info(this.getClass().getSimpleName(), connection.getClass().getSimpleName(), "Connection established");
 
             String ddlQuery = "CREATE TABLE IF NOT EXISTS tb_address(" +
-                    "id             BIGSERIAL, " +
-                    "state          VARCHAR(50)     NOT NULL, " +
-                    "city           VARCHAR(50)     NOT NULL, " +
-                    "region         VARCHAR(50)     NOT NULL, " +
-                    "district       VARCHAR(50)     NOT NULL," +
-                    "street         VARCHAR(50)     NOT NULL, " +
-                    "apartment      VARCHAR(50)     NOT NULL, " +
-                    "date_created   TIMESTAMP       NOT NULL DEFAULT NOW()," +
+                    "id           BIGSERIAL, " +
+                    "state        VARCHAR(50)  NOT NULL, " +
+                    "city         VARCHAR(50)  NOT NULL, " +
+                    "region       VARCHAR(50)  NOT NULL, " +
+                    "district     VARCHAR(50)  NOT NULL," +
+                    "street       VARCHAR(50)  NOT NULL, " +
+                    "apartment    VARCHAR(50)  NOT NULL, " +
+                    "date_created TIMESTAMP    NOT NULL DEFAULT NOW()," +
                     " " +
-                    "CONSTRAINT pk_address_id PRIMARY KEY(id));";
+                    "CONSTRAINT pk_address_id PRIMARY KEY(id))";
 
 
-
-            Log.info(this.getClass().getSimpleName(), Statement.class.getSimpleName(), " creating statement...");
+            System.out.println("Creating statement...");
             statement = connection.createStatement();
-            Log.info(this.getClass().getSimpleName(), Statement.class.getSimpleName(), " executing create table statement...");
+            System.out.println("Executing create table statement...");
             statement.execute(ddlQuery);
 
         } catch (SQLException e) {
@@ -55,14 +55,14 @@ public class AddressDaoImpl implements AddressDao {
         Address savedAddress = null;
 
         try {
-            Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), " connecting to database...");
+            System.out.println("Connecting to database...");
             connection = getConnection();
-            Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), " connection succeeded.");
+            System.out.println("Connection succeeded.");
 
             String createQuery = "INSERT INTO tb_address(" +
-                    "state, city, region, district, street, apartment, created_date) " +
+                    "state, city, region, district, street, apartment) " +
 
-                    "VALUES(?, ?, ?, ?, ?, ?, ?)";
+                    "VALUES(?, ?, ?, ?, ?, ?)";
 
             preparedStatement = connection.prepareStatement(createQuery);
             preparedStatement.setString(1, address.getState());
@@ -71,7 +71,6 @@ public class AddressDaoImpl implements AddressDao {
             preparedStatement.setString(4, address.getDistrict());
             preparedStatement.setString(5, address.getStreet());
             preparedStatement.setString(6, address.getApartment());
-            preparedStatement.setTimestamp(7, Timestamp.valueOf(address.getDateCreated()));
 
 
             preparedStatement.execute();
@@ -80,8 +79,6 @@ public class AddressDaoImpl implements AddressDao {
             String readQuery = "SELECT * FROM tb_address ORDER BY id DESC LIMIT 1";
 
             preparedStatement = connection.prepareStatement(readQuery);
-
-            resultSet = preparedStatement.executeQuery();
             resultSet.next();
 
             savedAddress = new Address();
@@ -91,10 +88,8 @@ public class AddressDaoImpl implements AddressDao {
             savedAddress.setDistrict(resultSet.getString("district"));
             savedAddress.setStreet(resultSet.getString("street"));
             savedAddress.setApartment(resultSet.getString("apartment"));
-            savedAddress.setDateCreated(resultSet.getTimestamp("date_created").toLocalDateTime());
 
         } catch (SQLException e) {
-            Log.error(this.getClass().getSimpleName(), e.getStackTrace()[0].getClass().getSimpleName(), e.getMessage());
             e.printStackTrace();
         } finally {
             close(resultSet);
@@ -112,9 +107,7 @@ public class AddressDaoImpl implements AddressDao {
         Address address = null;
 
         try {
-            Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), " connecting to database...");
             connection = getConnection();
-            Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), " connection succeeded.");
 
             String readQuery = "SELECT * FROM tb_address WHERE id = ?";
 
@@ -125,7 +118,6 @@ public class AddressDaoImpl implements AddressDao {
             resultSet.next();
 
             address = new Address();
-            address.setId(resultSet.getLong("id"));
             address.setState(resultSet.getString("state"));
             address.setCity(resultSet.getString("city"));
             address.setRegion(resultSet.getString("region"));
@@ -134,7 +126,6 @@ public class AddressDaoImpl implements AddressDao {
             address.setApartment(resultSet.getString("apartment"));
 
         } catch (SQLException e) {
-            Log.error(this.getClass().getSimpleName(), e.getStackTrace()[0].getClass().getSimpleName(), e.getMessage());
             e.printStackTrace();
         } finally {
             close(resultSet);
@@ -142,5 +133,10 @@ public class AddressDaoImpl implements AddressDao {
             close(connection);
         }
         return address;
+    }
+
+    @Override
+    public List<Address> findAll() {
+        return null;
     }
 }

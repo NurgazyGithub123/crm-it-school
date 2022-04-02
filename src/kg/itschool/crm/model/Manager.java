@@ -1,6 +1,7 @@
 package kg.itschool.crm.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public final class Manager extends BaseEntity {
 
@@ -9,10 +10,9 @@ public final class Manager extends BaseEntity {
     private String phoneNumber;
     private String email;
     private LocalDate dob;
-    private Double salary;
+    private Double salary; // null
 
     public Manager() {
-        super();
     }
 
     public Manager(Long id, String firstName, String lastName, String phoneNumber, String email, LocalDate dob, Double salary) {
@@ -77,13 +77,13 @@ public final class Manager extends BaseEntity {
     public String toString() {
         return "Manager{" +
                 "id=" + id +
-                ", dateCreated=" + dateCreated +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", email='" + email + '\'' +
                 ", dob=" + dob +
                 ", salary=" + salary +
+                ", dateCreated=" + dateCreated +
                 '}';
     }
 }
