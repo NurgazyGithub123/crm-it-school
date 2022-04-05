@@ -170,7 +170,7 @@ public class ManagerDaoImpl implements ManagerDao {
                 manager.setLastName(resultSet.getString("last_name"));
                 manager.setEmail(resultSet.getString("email"));
                 manager.setPhoneNumber(resultSet.getString("phone_number"));
-                manager.setSalary(Double.valueOf(resultSet.getString("salary").replaceAll("[^\\d\\.]", "")));
+                manager.setSalary(Double.valueOf(resultSet.getString("salary").replaceAll("[^\\d\\.]", "      ")));
                 manager.setDob(resultSet.getDate("dob").toLocalDate());
                 manager.setDateCreated(resultSet.getTimestamp("date_created").toLocalDateTime());
                 managers.add(manager);

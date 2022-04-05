@@ -1,10 +1,16 @@
 package kg.itschool.crm.dao.impl;
 
 import kg.itschool.crm.dao.CourseDao;
+import kg.itschool.crm.dao.CourseFormatDao;
+import kg.itschool.crm.dao.daoutil.Log;
 import kg.itschool.crm.model.Course;
 import kg.itschool.crm.model.CourseFormat;
+import kg.itschool.crm.model.Manager;
+import kg.itschool.crm.model.Mentor;
 
 import java.sql.*;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CourseDaoImpl implements CourseDao {
@@ -151,6 +157,40 @@ public class CourseDaoImpl implements CourseDao {
 
     @Override
     public List<Course> findAll() {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List <Course> courses = new ArrayList<>();
+        List <CourseFormat> courseFormats = new ArrayList<>();
+        List<Manager> managers = new ArrayList<>();
+        List <Mentor> mentors = new ArrayList<>();
+        try {
+            Log.info(this.getClass().getSimpleName() + " findAll()", Connection.class.getSimpleName(), "Establishing connection");
+            connection = getConnection();
+
+            String readQuery = "SELECT * FROM tb_mentors;";
+
+            preparedStatement = connection.prepareStatement(readQuery);
+
+            resultSet = preparedStatement.executeQuery();
+
+            for (int i = 0; i <= courses.size() && resultSet.next(); i++) {
+                Course course = new Course();
+                course.setId(resultSet.getLong("id"));
+                course.setName(resultSet.getString("first_name"));
+                course.setPrice(Double.parseDouble(resultSet.getString("salary").replaceAll("[^\\d.]", "")));
+                courses.add(course);
+            }
+            return courses;
+        } catch (Exception e) {
+            Log.error(this.getClass().getSimpleName(), e.getStackTrace()[0].getClassName(), e.getMessage());
+            e.printStackTrace();
+        } finally {
+            close(resultSet);
+            close(preparedStatement);
+            close(connection);
+        }
+
         return null;
     }
 }

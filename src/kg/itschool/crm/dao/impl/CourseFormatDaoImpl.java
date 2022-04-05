@@ -101,6 +101,7 @@ public class CourseFormatDaoImpl implements CourseFormatDao {
         }
         return savedCourseFormat;
     }
+
     @Override
     public CourseFormat findById(Long id) {
 
@@ -147,5 +148,20 @@ public class CourseFormatDaoImpl implements CourseFormatDao {
     @Override
     public List<CourseFormat> findAll() {
         return null;
+    }
+
+    @Override
+    public List<CourseFormat> saveAll(List<CourseFormat> courseFormats) {
+        return null;
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+        return null;
+    }
+
+    @Override
+    public void close(AutoCloseable closeable) {
+
     }
 }

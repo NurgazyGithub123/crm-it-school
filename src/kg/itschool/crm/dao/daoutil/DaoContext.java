@@ -20,7 +20,6 @@ public abstract class DaoContext {
     private static StudentDao studentDao;
     private static GroupDao groupDao;
     private static CourseFormatDao courseFormatDao;
-    private static AddressDao addressDao;
     private static CourseDao courseDao;
 
     public static CrudDao<?> autowired(String qualifier, String scope) {
@@ -40,8 +39,6 @@ public abstract class DaoContext {
                 return getCourseFormatDaoSQL(scope);
             case "CourseDao":
                 return getCourseDaoSQL(scope);
-            case "AddressDao":
-                return getAddressDaoSQL(scope);
             default:
                 throw new RuntimeException("Can not find bean for autowiring: " + qualifier);
         }
@@ -95,16 +92,6 @@ public abstract class DaoContext {
             groupDao = new GroupDaoImpl();
         }
         return groupDao;
-    }
-
-    private static AddressDao getAddressDaoSQL(String scope) {
-        if(scope.equals("prototype")){
-            return new AddressDaoImpl();
-        }
-        if(addressDao == null){
-            addressDao = new AddressDaoImpl();
-        }
-        return addressDao;
     }
 
     private static CourseFormatDao getCourseFormatDaoSQL(String scope){

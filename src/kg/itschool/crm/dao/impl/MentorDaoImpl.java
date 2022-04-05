@@ -62,7 +62,7 @@ public class MentorDaoImpl implements MentorDao {
             System.out.println("Connection succeeded.");
 
             String createQuery = "INSERT INTO tb_mentors(" +
-                    "last_name, first_name, phone_number, salary, date_created, dob, email) " +
+                    "last_name, first_name, salary, dob, email) " +
 
                     "VALUES(?, ?, ?, MONEY(?), ?, ?, ?)";
 
@@ -153,8 +153,8 @@ public class MentorDaoImpl implements MentorDao {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
-        List<Mentor> mentors = new ArrayList<>();
-
+        List<Manager> managers = new ArrayList<>();
+        List <Mentor> mentors = new ArrayList<>();
         try {
             Log.info(this.getClass().getSimpleName() + " findAll()", Connection.class.getSimpleName(), "Establishing connection");
             connection = getConnection();
@@ -167,13 +167,14 @@ public class MentorDaoImpl implements MentorDao {
 
             for (int i = 0; i <= mentors.size() && resultSet.next(); i++) {
                 Mentor mentor = new Mentor();
+                mentor.setId(resultSet.getLong("id"));
                 mentor.setFirstName(resultSet.getString("first_name"));
                 mentor.setLastName(resultSet.getString("last_name"));
                 mentor.setEmail(resultSet.getString("email"));
-                mentor.setPhoneNumber(resultSet.getString("phone_number"));
                 mentor.setSalary(Double.valueOf(resultSet.getString("salary").replaceAll("[^\\d\\.]", "")));
                 mentor.setDob(resultSet.getDate("dob").toLocalDate());
                 mentor.setDateCreated(resultSet.getTimestamp("date_created").toLocalDateTime());
+                mentors.add(mentor);
             }
             return mentors;
         } catch (Exception e) {
