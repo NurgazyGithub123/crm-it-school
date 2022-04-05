@@ -231,7 +231,8 @@ public class GroupDaoImpl implements GroupDao {
             group.setCourse(course);
             group.setMentor(mentor);
 
-            Optional.of(group);
+            return Optional.of(group);
+
         } catch (SQLException e) {
             Log.error(this.getClass().getSimpleName(), e.getStackTrace()[0].getClass().getSimpleName(), e.getMessage());
             e.printStackTrace();
@@ -330,33 +331,43 @@ public class GroupDaoImpl implements GroupDao {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
+        List<Group> savedGroups = new ArrayList<>();
+
         CourseFormat savedCourseFormat;
         Course savedCourse;
         Mentor savedMentor;
         Group savedGroup;
 
+
         try {
             Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), " connecting to database...");
             connection = getConnection();
-            Log.info(this.getClass().getSimpleName(), Connection.class.getSimpleName(), " connection succeeded.");
 
-            for (int i = 0; i < groups.size(); i++) {
 
-                Group group = new Group();
-                String createQuery = "INSERT INTO tb_groups(" +
+                String insertQuery = "INSERT INTO tb_groups(" +
                         "name, group_time, date_created, course_id, mentor_id ) " +
 
                         "VALUES(?, ?, ?, ?, ?)";
 
-                preparedStatement = connection.prepareStatement(createQuery);
+                connection.setAutoCommit(false);
+
+            for (int i = 0; i < groups.size(); i++) {
+                Group group = groups.get(i);
+
+                preparedStatement = connection.prepareStatement(insertQuery);
                 preparedStatement.setString(1, group.getName());
                 preparedStatement.setTime(2, Time.valueOf(group.getGroupTime()));
                 preparedStatement.setTimestamp(3, Timestamp.valueOf(group.getDateCreated()));
                 preparedStatement.setLong(4, group.getCourse().getId());
                 preparedStatement.setLong(5, group.getMentor().getId());
 
-                preparedStatement.execute();
-                close(preparedStatement);
+                preparedStatement.addBatch();
+
+                if(i % 20 == 0 || i == groups.size() - 1){
+                    preparedStatement.executeBatch();
+                    preparedStatement.clearBatch();
+                }
+            }
 
 
                 String readQuery = "" +
@@ -378,49 +389,51 @@ public class GroupDaoImpl implements GroupDao {
                         "" +
                         "    JOIN tb_mentors AS m " +
                         "    ON g.mentor_id = m.id " +
-                        "    ORDER BY g.id DESC LIMIT 1;";
+                        "    ORDER BY g.id DESC LIMIT " + groups.size() + ";";
 
+                close(preparedStatement);
                 preparedStatement = connection.prepareStatement(readQuery);
-
                 resultSet = preparedStatement.executeQuery();
-                resultSet.next();
 
-                savedCourseFormat = new CourseFormat();
-                savedCourseFormat.setId(resultSet.getLong("format_id"));
-                savedCourseFormat.setFormat(resultSet.getString("course_format"));
-                savedCourseFormat.setCourseDurationWeeks(resultSet.getInt("course_duration_weeks"));
-                savedCourseFormat.setLessonDuration(resultSet.getTime("lesson_duration").toLocalTime());
-                savedCourseFormat.setLessonsPerWeek(resultSet.getInt("lessons_per_week"));
-                savedCourseFormat.setOnline(resultSet.getBoolean("is_online"));
-                savedCourseFormat.setDateCreated(resultSet.getTimestamp("format_dc").toLocalDateTime());
+                while (resultSet.next()) {
 
-                savedCourse = new Course();
-                savedCourse.setId(resultSet.getLong("course_id"));
-                savedCourse.setName(resultSet.getString("course_name"));
-                savedCourse.setPrice(Double.parseDouble(resultSet.getString("price").replaceAll("[^\\d\\.]+", "")) / 100);
-                savedCourse.setCourseFormat(savedCourseFormat);
-                savedCourse.setDateCreated(resultSet.getTimestamp("course_dc").toLocalDateTime());
 
-                savedMentor = new Mentor();
-                savedMentor.setId(resultSet.getLong("mentor_id"));
-                savedMentor.setFirstName(resultSet.getString("first_name"));
-                savedMentor.setLastName(resultSet.getString("last_name"));
-                savedMentor.setEmail(resultSet.getString("email"));
-                savedMentor.setPhoneNumber(resultSet.getString("phone_number"));
-                savedMentor.setSalary(Double.parseDouble(resultSet.getString("salary").replaceAll("[^\\d\\.]", "")) / 100);
-                savedMentor.setDob(resultSet.getDate("dob").toLocalDate());
-                savedMentor.setDateCreated(resultSet.getTimestamp("mentor_dc").toLocalDateTime());
+                    savedCourseFormat = new CourseFormat();
+                    savedCourseFormat.setId(resultSet.getLong("format_id"));
+                    savedCourseFormat.setFormat(resultSet.getString("course_format"));
+                    savedCourseFormat.setCourseDurationWeeks(resultSet.getInt("course_duration_weeks"));
+                    savedCourseFormat.setLessonDuration(resultSet.getTime("lesson_duration").toLocalTime());
+                    savedCourseFormat.setLessonsPerWeek(resultSet.getInt("lessons_per_week"));
+                    savedCourseFormat.setOnline(resultSet.getBoolean("is_online"));
+                    savedCourseFormat.setDateCreated(resultSet.getTimestamp("format_dc").toLocalDateTime());
 
-                savedGroup = new Group();
-                savedGroup.setId(resultSet.getLong("group_id"));
-                savedGroup.setName(resultSet.getString("group_name"));
-                savedGroup.setGroupTime(LocalTime.parse(resultSet.getString("group_time")));
-                savedGroup.setDateCreated(resultSet.getTimestamp("group_dc").toLocalDateTime());
-                savedGroup.setCourse(savedCourse);
-                savedGroup.setMentor(savedMentor);
+                    savedCourse = new Course();
+                    savedCourse.setId(resultSet.getLong("course_id"));
+                    savedCourse.setName(resultSet.getString("course_name"));
+                    savedCourse.setPrice(Double.parseDouble(resultSet.getString("price").replaceAll("[^\\d\\.]+", "")) / 100);
+                    savedCourse.setCourseFormat(savedCourseFormat);
+                    savedCourse.setDateCreated(resultSet.getTimestamp("course_dc").toLocalDateTime());
 
-                groups.add(savedGroup);
-            }
+                    savedMentor = new Mentor();
+                    savedMentor.setId(resultSet.getLong("mentor_id"));
+                    savedMentor.setFirstName(resultSet.getString("first_name"));
+                    savedMentor.setLastName(resultSet.getString("last_name"));
+                    savedMentor.setEmail(resultSet.getString("email"));
+                    savedMentor.setPhoneNumber(resultSet.getString("phone_number"));
+                    savedMentor.setSalary(Double.parseDouble(resultSet.getString("salary").replaceAll("[^\\d\\.]", "")) / 100);
+                    savedMentor.setDob(resultSet.getDate("dob").toLocalDate());
+                    savedMentor.setDateCreated(resultSet.getTimestamp("mentor_dc").toLocalDateTime());
+
+                    savedGroup = new Group();
+                    savedGroup.setId(resultSet.getLong("group_id"));
+                    savedGroup.setName(resultSet.getString("group_name"));
+                    savedGroup.setGroupTime(LocalTime.parse(resultSet.getString("group_time")));
+                    savedGroup.setDateCreated(resultSet.getTimestamp("group_dc").toLocalDateTime());
+                    savedGroup.setCourse(savedCourse);
+                    savedGroup.setMentor(savedMentor);
+
+                    groups.add(savedGroup);
+                }
         } catch (SQLException e) {
             Log.error(this.getClass().getSimpleName(), e.getStackTrace()[0].getClass().getSimpleName(), e.getMessage());
             e.printStackTrace();
